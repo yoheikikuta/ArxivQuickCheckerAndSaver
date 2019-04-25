@@ -4,10 +4,10 @@ import android.app.DownloadManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
-import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
+import com.github.kittinunf.fuel.httpGet
 import java.net.URL
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.result.Result
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,21 +17,17 @@ class MainActivity : AppCompatActivity() {
 
         val textView = findViewById<TextView>(R.id.text)
 
-        // Instantiate the RequestQueue.
-        val queue = Volley.newRequestQueue(this)
-        val url = "http://www.google.com"
-
-        // Request a string response from the provided URL.
-        val stringRequest = StringRequest(
-            com.android.volley.Request.Method.GET, url,
-            Response.Listener<String> { response ->
-                // Display the first 500 characters of the response string.
-                textView.text = "Response is: ${response.substring(0, 500)}"
-            },
-            Response.ErrorListener { textView.text = "That didn't work!" })
-
-        // Add the request to the RequestQueue.
-        queue.add(stringRequest)
+        "http://www.google.com".httpGet().responseString { request, response, result ->
+            when (result) {
+                is Result.Failure -> {
+                    val ex = result.getException()
+                }
+                is Result.Success -> {
+                    val data = result.get()
+                    textView.text = "Response is: ${data.substring(0, 500)}"
+                }
+            }
+        }
     }
 
 }
