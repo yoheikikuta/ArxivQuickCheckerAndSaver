@@ -3,6 +3,7 @@ package io.github.yoheikikuta.arxivquickcheckerandsaver
 import android.app.DownloadManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Html
 import android.util.Xml
 import android.widget.TextView
 import com.github.kittinunf.fuel.httpGet
@@ -99,17 +100,8 @@ class MainActivity : AppCompatActivity() {
             // Processes creator tags in the feed.
             @Throws(IOException::class, XmlPullParserException::class)
             fun readCreator(parser: XmlPullParser): String {
-//                var creator = ""
                 parser.require(XmlPullParser.START_TAG, ns, "dc:creator")
-                val creator = readText(parser)
-//                val tag = parser.name
-//                val relType = parser.getAttributeValue(null, "rel")
-//                if (tag == "link") {
-//                    if (relType == "alternate") {
-//                        link = parser.getAttributeValue(null, "href")
-//                        parser.nextTag()
-//                    }
-//                }
+                val creator = Html.fromHtml(readText(parser)).toString()
                 parser.require(XmlPullParser.END_TAG, ns, "dc:creator")
                 return creator
             }
@@ -118,7 +110,7 @@ class MainActivity : AppCompatActivity() {
             @Throws(IOException::class, XmlPullParserException::class)
             fun readDescription(parser: XmlPullParser): String {
                 parser.require(XmlPullParser.START_TAG, ns, "description")
-                val description = readText(parser)
+                val description = Html.fromHtml(readText(parser)).toString()
                 parser.require(XmlPullParser.END_TAG, ns, "description")
                 return description
             }
@@ -182,7 +174,6 @@ class MainActivity : AppCompatActivity() {
                 is Result.Success -> {
                     val data = result.get()
                     val items: List<Item>? = ArxivRSSXmlParser().parse(data) as List<Item>?
-//                    textView.text = "Response is: ${data.substring(0, 500)}"
                     textViewTitle.text = items!![0].title
                     textViewCreator.text = items!![0].creator
                     textViewDescription.text = items!![0].description
