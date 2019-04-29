@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     when (parser.name) {
                         "title" -> title = readTitle(parser)
-                        "creator" -> creator = readCreator(parser)
+                        "dc:creator" -> creator = readCreator(parser)
                         "description" -> description = readDescription(parser)
                         else -> skip(parser)
                     }
