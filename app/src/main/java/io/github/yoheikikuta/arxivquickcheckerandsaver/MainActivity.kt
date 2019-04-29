@@ -170,7 +170,9 @@ class MainActivity : AppCompatActivity() {
 //        } as List<Item>? ?: emptyList()
 
 
-        val textView = findViewById<TextView>(R.id.text)
+        val textViewTitle = findViewById<TextView>(R.id.title)
+        val textViewCreator = findViewById<TextView>(R.id.creator)
+        val textViewDescription = findViewById<TextView>(R.id.description)
 
         "http://export.arxiv.org/rss/cs.CV".httpGet().responseString { request, response, result ->
             when (result) {
@@ -181,7 +183,9 @@ class MainActivity : AppCompatActivity() {
                     val data = result.get()
                     val items: List<Item>? = ArxivRSSXmlParser().parse(data) as List<Item>?
 //                    textView.text = "Response is: ${data.substring(0, 500)}"
-                    textView.text = items!![0].description
+                    textViewTitle.text = items!![0].title
+                    textViewCreator.text = items!![0].creator
+                    textViewDescription.text = items!![0].description
                 }
             }
         }
