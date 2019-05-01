@@ -66,14 +66,14 @@ class MainActivity : FragmentActivity() {
     private inner class ScreenSlidePagerAdapter(fm: FragmentManager, val items: List<Item>?) : FragmentStatePagerAdapter(fm) {
         override fun getCount(): Int = items!!.size
 
-        override fun getItem(position: Int): Fragment = ScreenSlidePageFragment(items)
+        override fun getItem(position: Int): Fragment = ScreenSlidePageFragment(position, items)
     }
 
 }
 
 data class Item(val title: String?, val creator: String?, val description: String?)
 
-class ScreenSlidePageFragment @SuppressLint("ValidFragment") constructor(private val items: List<Item>?) : Fragment() {
+class ScreenSlidePageFragment @SuppressLint("ValidFragment") constructor(val position: Int, private val items: List<Item>?) : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -86,8 +86,8 @@ class ScreenSlidePageFragment @SuppressLint("ValidFragment") constructor(private
         val titleTextView = view.findViewById<TextView>(R.id.title)
         val creatorTextView = view.findViewById<TextView>(R.id.creator)
         val descriptionTextView = view.findViewById<TextView>(R.id.description)
-        titleTextView.text = items!![0].title
-        creatorTextView.text = items!![0].creator
-        descriptionTextView.text = items!![0].description
+        titleTextView.text = items!![position].title
+        creatorTextView.text = items!![position].creator
+        descriptionTextView.text = items!![position].description
     }
 }
