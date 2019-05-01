@@ -1,5 +1,6 @@
 package io.github.yoheikikuta.arxivquickcheckerandsaver
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -14,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
+import kotlinx.android.synthetic.*
 
 class MainActivity : FragmentActivity() {
 
@@ -64,18 +66,28 @@ class MainActivity : FragmentActivity() {
     private inner class ScreenSlidePagerAdapter(fm: FragmentManager, val items: List<Item>?) : FragmentStatePagerAdapter(fm) {
         override fun getCount(): Int = items!!.size
 
-        override fun getItem(position: Int): Fragment = ScreenSlidePageFragment()
+        override fun getItem(position: Int): Fragment = ScreenSlidePageFragment(items)
     }
 
 }
 
 data class Item(val title: String?, val creator: String?, val description: String?)
 
-class ScreenSlidePageFragment : Fragment() {
+class ScreenSlidePageFragment @SuppressLint("ValidFragment") constructor(private val items: List<Item>?) : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = inflater.inflate(R.layout.fragment_screen_slide_page, container, false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val titleTextView = view.findViewById<TextView>(R.id.title)
+        val creatorTextView = view.findViewById<TextView>(R.id.creator)
+        val descriptionTextView = view.findViewById<TextView>(R.id.description)
+        titleTextView.text = items!![0].title
+        creatorTextView.text = items!![0].creator
+        descriptionTextView.text = items!![0].description
+    }
 }
