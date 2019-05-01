@@ -32,8 +32,8 @@ class MainActivity : FragmentActivity() {
         // Instantiate a ViewPager and a PagerAdapter.
         mPager = findViewById(R.id.pager)
 
-        // The pager adapter, which provides the pages to the view pager widget.
-        "http://export.arxiv.org/rss/cs.CV".httpGet().responseString { request, response, result ->
+        // Get arXiv RSS information and set the pager adapter which provides the pages to the view paper widget.
+        "http://export.arxiv.org/rss/cs.CV".httpGet().responseString { _, _, result ->
             when (result) {
                 is Result.Failure -> {
                     val ex = result.getException()
@@ -60,8 +60,7 @@ class MainActivity : FragmentActivity() {
     }
 
     /**
-     * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in
-     * sequence.
+     * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in sequence.
      */
     private inner class ScreenSlidePagerAdapter(fm: FragmentManager, val items: List<Item>?) : FragmentStatePagerAdapter(fm) {
         override fun getCount(): Int = items!!.size
@@ -73,7 +72,8 @@ class MainActivity : FragmentActivity() {
 
 data class Item(val title: String?, val creator: String?, val description: String?)
 
-class ScreenSlidePageFragment @SuppressLint("ValidFragment") constructor(val position: Int, private val items: List<Item>?) : Fragment() {
+class ScreenSlidePageFragment @SuppressLint("ValidFragment") constructor(
+    private val position: Int, private val items: List<Item>?) : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -83,9 +83,11 @@ class ScreenSlidePageFragment @SuppressLint("ValidFragment") constructor(val pos
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val titleTextView = view.findViewById<TextView>(R.id.title)
         val creatorTextView = view.findViewById<TextView>(R.id.creator)
         val descriptionTextView = view.findViewById<TextView>(R.id.description)
+
         titleTextView.text = items!![position].title
         creatorTextView.text = items!![position].creator
         descriptionTextView.text = items!![position].description
