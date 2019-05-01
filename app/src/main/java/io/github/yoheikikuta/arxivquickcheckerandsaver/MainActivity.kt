@@ -15,51 +15,7 @@ import android.widget.TextView
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 
-class MainActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        val textViewTitle = findViewById<TextView>(R.id.title)
-        val textViewCreator = findViewById<TextView>(R.id.creator)
-        val textViewDescription = findViewById<TextView>(R.id.description)
-
-        "http://export.arxiv.org/rss/cs.CV".httpGet().responseString { request, response, result ->
-            when (result) {
-                is Result.Failure -> {
-                    val ex = result.getException()
-                }
-                is Result.Success -> {
-                    val data = result.get()
-                    val items: List<Item>? = ArxivRSSXmlParser().parse(data) as List<Item>?
-                    textViewTitle.text = items!![1].title
-                    textViewCreator.text = items!![1].creator
-                    textViewDescription.text = items!![1].description
-
-                    val secondIntent = Intent(this, ScreenSlidePagerActivity::class.java)
-                    startActivity(secondIntent)
-                }
-            }
-        }
-
-    }
-
-}
-
-data class Item(val title: String?, val creator: String?, val description: String?)
-
-class ScreenSlidePageFragment : Fragment() {
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_screen_slide_page, container, false)
-}
-
-//class ScreenSlidePagerActivity(items:List<Item>?) : FragmentActivity() {
-class ScreenSlidePagerActivity() : FragmentActivity() {
+class MainActivity : FragmentActivity() {
 
     /**
      * The pager widget, which handles animation and allows swiping horizontally to access previous
@@ -96,9 +52,21 @@ class ScreenSlidePagerActivity() : FragmentActivity() {
      * sequence.
      */
     private inner class ScreenSlidePagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
-//        override fun getCount(): Int = numItems!!
+        //        override fun getCount(): Int = numItems!!
         override fun getCount(): Int = 5
 
         override fun getItem(position: Int): Fragment = ScreenSlidePageFragment()
     }
+
+}
+
+data class Item(val title: String?, val creator: String?, val description: String?)
+
+class ScreenSlidePageFragment : Fragment() {
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View = inflater.inflate(R.layout.fragment_screen_slide_page, container, false)
 }
