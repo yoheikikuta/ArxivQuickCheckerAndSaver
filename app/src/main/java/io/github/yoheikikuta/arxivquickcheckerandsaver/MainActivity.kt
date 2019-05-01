@@ -22,7 +22,6 @@ class MainActivity : FragmentActivity() {
      * and next wizard steps.
      */
     private lateinit var mPager: ViewPager
-//    private val numItems: Int? = items?.size
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,8 +31,19 @@ class MainActivity : FragmentActivity() {
         mPager = findViewById(R.id.pager)
 
         // The pager adapter, which provides the pages to the view pager widget.
-        val pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager)
-        mPager.adapter = pagerAdapter
+        "http://export.arxiv.org/rss/cs.CV".httpGet().responseString { request, response, result ->
+            when (result) {
+                is Result.Failure -> {
+                    val ex = result.getException()
+                }
+                is Result.Success -> {
+                    val data = result.get()
+                    val items: List<Item>? = ArxivRSSXmlParser().parse(data) as List<Item>?
+                    val pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager, items)
+                    mPager.adapter = pagerAdapter
+                }
+            }
+        }
     }
 
     override fun onBackPressed() {
@@ -51,9 +61,8 @@ class MainActivity : FragmentActivity() {
      * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in
      * sequence.
      */
-    private inner class ScreenSlidePagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
-        //        override fun getCount(): Int = numItems!!
-        override fun getCount(): Int = 5
+    private inner class ScreenSlidePagerAdapter(fm: FragmentManager, val items: List<Item>?) : FragmentStatePagerAdapter(fm) {
+        override fun getCount(): Int = items!!.size
 
         override fun getItem(position: Int): Fragment = ScreenSlidePageFragment()
     }
