@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Parcelable
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.support.v4.app.FragmentManager
@@ -15,6 +16,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
+import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.*
 
 class MainActivity : FragmentActivity() {
@@ -65,15 +67,27 @@ class MainActivity : FragmentActivity() {
     private inner class ScreenSlidePagerAdapter(fm: FragmentManager, val items: List<Item>?) : FragmentStatePagerAdapter(fm) {
         override fun getCount(): Int = items!!.size
 
-        override fun getItem(position: Int): Fragment = ScreenSlidePageFragment(position, items)
+        override fun getItem(position: Int): Fragment = ScreenSlidePageFragment.newInstance(position, items)
     }
 
 }
 
-data class Item(val title: String?, val creator: String?, val description: String?)
+@Parcelize
+data class Item(val title: String?, val creator: String?, val description: String?): Parcelable
 
-class ScreenSlidePageFragment @SuppressLint("ValidFragment") constructor(
-    private val position: Int, private val items: List<Item>?) : Fragment() {
+class ScreenSlidePageFragment: Fragment() {
+
+    companion object {
+        fun newInstance(position: Int, items: List<Item>?): ScreenSlidePageFragment {
+            val fragment = ScreenSlidePageFragment()
+            val args = Bundle()
+            args.putInt("position", position)
+            items as ArrayList<Parcelable>
+            args.putParcelableArrayList("items", items)
+            fragment.arguments = args
+            return fragment
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -83,6 +97,9 @@ class ScreenSlidePageFragment @SuppressLint("ValidFragment") constructor(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val position: Int = arguments!!.get("position") as Int
+        val items: List<Item>? = arguments!!.get("items") as List<Item>?
 
         val titleTextView = view.findViewById<TextView>(R.id.title)
         val creatorTextView = view.findViewById<TextView>(R.id.creator)
