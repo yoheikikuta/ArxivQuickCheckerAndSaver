@@ -68,7 +68,7 @@ class MainActivity : FragmentActivity() {
     private inner class ScreenSlidePagerAdapter(fm: FragmentManager, val items: List<Item>) : FragmentStatePagerAdapter(fm) {
         override fun getCount(): Int = items.size
 
-        override fun getItem(position: Int): Fragment = ScreenSlidePageFragment.newInstance(position, items)
+        override fun getItem(position: Int): Fragment = ScreenSlidePageFragment.newInstance(position, items[position])
     }
 
 }
@@ -79,12 +79,11 @@ data class Item(val title: String, val creator: String, val description: String)
 class ScreenSlidePageFragment: Fragment() {
 
     companion object {
-        fun newInstance(position: Int, items: List<Item>): ScreenSlidePageFragment {
+        fun newInstance(position: Int, item: Item): ScreenSlidePageFragment {
             val fragment = ScreenSlidePageFragment()
             val args = Bundle()
             args.putInt("position", position)
-            items as ArrayList<Parcelable>
-            args.putParcelableArrayList("items", items)
+            args.putParcelable("item", item)
             fragment.arguments = args
             return fragment
         }
@@ -99,15 +98,14 @@ class ScreenSlidePageFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val position: Int = arguments!!.get("position") as Int
-        val items: List<Item> = arguments!!.get("items") as List<Item>
+        val item: Item = arguments!!.get("item") as Item
 
         val titleTextView = view.findViewById<TextView>(R.id.title)
         val creatorTextView = view.findViewById<TextView>(R.id.creator)
         val descriptionTextView = view.findViewById<TextView>(R.id.description)
 
-        titleTextView.text = items[position].title
-        creatorTextView.text = items[position].creator
-        descriptionTextView.text = items[position].description
+        titleTextView.text = item.title
+        creatorTextView.text = item.creator
+        descriptionTextView.text = item.description
     }
 }
