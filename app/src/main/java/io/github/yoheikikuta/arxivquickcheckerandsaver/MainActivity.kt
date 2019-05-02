@@ -42,7 +42,8 @@ class MainActivity : FragmentActivity() {
                 }
                 is Result.Success -> {
                     val data = result.get()
-                    val items: List<Item>? = ArxivRSSXmlParser().parse(data) as List<Item>?
+                    val items: List<Item> = ArxivRSSXmlParser().parse(data) as List<Item>?
+                        ?: listOf(Item(title = "NO ENTRY", creator = "", description = ""))
                     val pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager, items)
                     mPager.adapter = pagerAdapter
                 }
@@ -64,8 +65,8 @@ class MainActivity : FragmentActivity() {
     /**
      * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in sequence.
      */
-    private inner class ScreenSlidePagerAdapter(fm: FragmentManager, val items: List<Item>?) : FragmentStatePagerAdapter(fm) {
-        override fun getCount(): Int = items!!.size
+    private inner class ScreenSlidePagerAdapter(fm: FragmentManager, val items: List<Item>) : FragmentStatePagerAdapter(fm) {
+        override fun getCount(): Int = items.size
 
         override fun getItem(position: Int): Fragment = ScreenSlidePageFragment.newInstance(position, items)
     }
@@ -73,12 +74,12 @@ class MainActivity : FragmentActivity() {
 }
 
 @Parcelize
-data class Item(val title: String?, val creator: String?, val description: String?): Parcelable
+data class Item(val title: String, val creator: String, val description: String): Parcelable
 
 class ScreenSlidePageFragment: Fragment() {
 
     companion object {
-        fun newInstance(position: Int, items: List<Item>?): ScreenSlidePageFragment {
+        fun newInstance(position: Int, items: List<Item>): ScreenSlidePageFragment {
             val fragment = ScreenSlidePageFragment()
             val args = Bundle()
             args.putInt("position", position)
@@ -99,14 +100,14 @@ class ScreenSlidePageFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val position: Int = arguments!!.get("position") as Int
-        val items: List<Item>? = arguments!!.get("items") as List<Item>?
+        val items: List<Item> = arguments!!.get("items") as List<Item>
 
         val titleTextView = view.findViewById<TextView>(R.id.title)
         val creatorTextView = view.findViewById<TextView>(R.id.creator)
         val descriptionTextView = view.findViewById<TextView>(R.id.description)
 
-        titleTextView.text = items!![position].title
-        creatorTextView.text = items!![position].creator
-        descriptionTextView.text = items!![position].description
+        titleTextView.text = items[position].title
+        creatorTextView.text = items[position].creator
+        descriptionTextView.text = items[position].description
     }
 }

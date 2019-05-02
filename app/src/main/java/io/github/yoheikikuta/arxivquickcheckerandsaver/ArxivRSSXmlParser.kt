@@ -44,9 +44,9 @@ class ArxivRSSXmlParser {
     @Throws(XmlPullParserException::class, IOException::class)
     fun readItem(parser: XmlPullParser): Item {
         parser.require(XmlPullParser.START_TAG, ns, "item")
-        var title: String? = null
-        var creator: String? = null
-        var description: String? = null
+        var title = ""
+        var creator = ""
+        var description = ""
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.eventType != XmlPullParser.START_TAG) {
                 continue
