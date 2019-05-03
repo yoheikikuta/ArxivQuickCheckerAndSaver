@@ -68,10 +68,12 @@ class ArxivRSSXmlParser {
     }
 
     // Processes title tags in the feed.
+    // Remove (arXiv:XXXX.XXXX) information.
     @Throws(IOException::class, XmlPullParserException::class)
     fun readTitle(parser: XmlPullParser): String {
         parser.require(XmlPullParser.START_TAG, ns, "title")
-        val title = readText(parser)
+        var title = readText(parser)
+        title = title.replace(" \\(arXiv:.*\\)".toRegex(),"")
         parser.require(XmlPullParser.END_TAG, ns, "title")
         return title
     }
