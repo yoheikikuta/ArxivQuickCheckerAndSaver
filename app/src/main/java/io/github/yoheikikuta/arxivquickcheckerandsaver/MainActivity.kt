@@ -37,7 +37,7 @@ class MainActivity : FragmentActivity() {
                 is Result.Success -> {
                     val data = result.get()
                     val items: List<Item> = ArxivRSSXmlParser().parse(data) as List<Item>?
-                        ?: listOf(Item(title = "NO ENTRY", creator = "", description = ""))
+                        ?: listOf(Item(title = "NO ENTRY", creator = "", description = "", isNew = true))
                     val pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager, items)
                     mPager.adapter = pagerAdapter
                 }

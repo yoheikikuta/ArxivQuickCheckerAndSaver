@@ -11,7 +11,7 @@ import java.io.IOException
 import java.io.StringReader
 
 @Parcelize
-data class Item(val title: String, val creator: String, val description: String): Parcelable
+data class Item(val title: String, val creator: String, val description: String, val isNew: Boolean): Parcelable
 
 class ArxivRSSXmlParser {
 
@@ -37,7 +37,7 @@ class ArxivRSSXmlParser {
             }
             // Starts by looking for the item tag
             if (parser.name == "item") {
-                entries.add(readItem(parser))
+                readItem(parser).let { if (it.isNew) {entries.add(it)} }
             } else {
                 skip(parser)
             }
@@ -53,6 +53,7 @@ class ArxivRSSXmlParser {
         var title = ""
         var creator = ""
         var description = ""
+        var isNew = true
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.eventType != XmlPullParser.START_TAG) {
                 continue
@@ -64,16 +65,19 @@ class ArxivRSSXmlParser {
                 else -> skip(parser)
             }
         }
-        return Item(title, creator, description)
+
+        // Postprocessing: check whether the paper is new and remove (arXiv:XXXX.XXXX) information in the title.
+        isNew = !Regex("UPDATED").containsMatchIn(title)
+        title = title.replace(" \\(arXiv:.*\\)".toRegex(),"")
+
+        return Item(title, creator, description, isNew)
     }
 
     // Processes title tags in the feed.
-    // Remove (arXiv:XXXX.XXXX) information.
     @Throws(IOException::class, XmlPullParserException::class)
     fun readTitle(parser: XmlPullParser): String {
         parser.require(XmlPullParser.START_TAG, ns, "title")
         var title = readText(parser)
-        title = title.replace(" \\(arXiv:.*\\)".toRegex(),"")
         parser.require(XmlPullParser.END_TAG, ns, "title")
         return title
     }
