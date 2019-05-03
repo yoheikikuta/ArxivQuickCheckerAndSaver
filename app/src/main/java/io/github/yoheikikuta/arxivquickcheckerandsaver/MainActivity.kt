@@ -1,10 +1,6 @@
 package io.github.yoheikikuta.arxivquickcheckerandsaver
 
-import android.annotation.SuppressLint
-import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Parcelable
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.support.v4.app.FragmentManager
@@ -16,8 +12,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
-import kotlinx.android.parcel.Parcelize
-import kotlinx.android.synthetic.*
 
 class MainActivity : FragmentActivity() {
 
@@ -73,8 +67,6 @@ class MainActivity : FragmentActivity() {
 
 }
 
-@Parcelize
-data class Item(val title: String, val creator: String, val description: String): Parcelable
 
 class ScreenSlidePageFragment: Fragment() {
 

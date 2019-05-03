@@ -1,11 +1,17 @@
 package io.github.yoheikikuta.arxivquickcheckerandsaver
 
+import android.content.ClipData
+import android.os.Parcelable
 import android.text.Html
 import android.util.Xml
+import kotlinx.android.parcel.Parcelize
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
 import java.io.StringReader
+
+@Parcelize
+data class Item(val title: String, val creator: String, val description: String): Parcelable
 
 class ArxivRSSXmlParser {
 
@@ -21,7 +27,7 @@ class ArxivRSSXmlParser {
     }
 
     @Throws(XmlPullParserException::class, IOException::class)
-    fun readFeed(parser: XmlPullParser): List<Item> {
+    fun readFeed(parser: XmlPullParser): MutableList<Item> {
         val entries = mutableListOf<Item>()
 
         parser.require(XmlPullParser.START_TAG, ns, "rdf:RDF")
