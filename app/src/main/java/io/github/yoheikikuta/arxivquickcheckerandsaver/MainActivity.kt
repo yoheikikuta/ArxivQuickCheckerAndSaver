@@ -1,5 +1,6 @@
 package io.github.yoheikikuta.arxivquickcheckerandsaver
 
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
@@ -19,14 +20,13 @@ class MainActivity : FragmentActivity() {
      * The pager widget, which handles animation and allows swiping horizontally to access previous
      * and next wizard steps.
      */
-    private lateinit var mPager: ViewPager
+
+    // Instantiate a ViewPager by lazy.
+    private val pager by lazy { findViewById<ViewPager>(R.id.pager) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_screen_slide)
-
-        // Instantiate a ViewPager and a PagerAdapter.
-        mPager = findViewById(R.id.pager)
 
         // Get arXiv RSS information and set the pager adapter which provides the pages to the view paper widget.
         "http://export.arxiv.org/rss/cs.CV".httpGet().responseString { _, _, result ->
@@ -39,20 +39,20 @@ class MainActivity : FragmentActivity() {
                     val items: List<Item> = ArxivRSSXmlParser().parse(data) as List<Item>?
                         ?: listOf(Item(title = "NO ENTRY", creator = "", description = "", isNew = true))
                     val pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager, items)
-                    mPager.adapter = pagerAdapter
+                    pager.adapter = pagerAdapter
                 }
             }
         }
     }
 
     override fun onBackPressed() {
-        if (mPager.currentItem == 0) {
+        if (pager.currentItem == 0) {
             // If the user is currently looking at the first step, allow the system to handle the
             // Back button. This calls finish() on this activity and pops the back stack.
             super.onBackPressed()
         } else {
             // Otherwise, select the previous step.
-            mPager.currentItem = mPager.currentItem - 1
+            pager.currentItem = pager.currentItem - 1
         }
     }
 
