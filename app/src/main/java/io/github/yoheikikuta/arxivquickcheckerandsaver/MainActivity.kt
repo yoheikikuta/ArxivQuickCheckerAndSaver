@@ -39,7 +39,7 @@ abstract class ArxivPapersFragmentActivity : FragmentActivity(), CoroutineScope 
 
         // Get arXiv RSS information and set the pager adapter which provides the pages to the view paper widget.
         launch {
-            var allCategoryItems: MutableList<Item> = mutableListOf()
+            val allCategoryItems: MutableList<Item> = mutableListOf()
             val urlList: List<String> = listOf(
                 "http://export.arxiv.org/rss/cs.CL",
                 "http://export.arxiv.org/rss/cs.CV",
@@ -62,7 +62,7 @@ abstract class ArxivPapersFragmentActivity : FragmentActivity(), CoroutineScope 
                 return@forEach
             }
 
-            val pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager, allCategoryItems)
+            val pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager, allCategoryItems.distinct())
             pager.adapter = pagerAdapter
         }
     }
