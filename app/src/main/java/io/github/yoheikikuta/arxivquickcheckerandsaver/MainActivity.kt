@@ -62,7 +62,6 @@ abstract class ArxivPapersFragmentActivity : FragmentActivity(), CoroutineScope 
                 val items: List<Item> = ArxivRSSXmlParser().parse(data) as List<Item>?
                     ?: listOf(Item(title = "NO ENTRY", creator = "", description = "", isNew = true))
                 allCategoryItems.addAll(items)
-                return@forEach
             }
 
             val pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager, allCategoryItems.distinct())
