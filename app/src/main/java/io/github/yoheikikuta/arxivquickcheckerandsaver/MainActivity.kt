@@ -28,6 +28,22 @@ abstract class ArxivPapersFragmentActivity : FragmentActivity(), CoroutineScope 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
 
+    // Set the list of rss urls.
+    private val urlList: List<String> = listOf(
+        "http://export.arxiv.org/rss/cs.CL",
+        "http://export.arxiv.org/rss/cs.CV",
+        "http://export.arxiv.org/rss/cs.DS",
+        "http://export.arxiv.org/rss/cs.ET",
+        "http://export.arxiv.org/rss/cs.GT",
+        "http://export.arxiv.org/rss/cs.IR",
+        "http://export.arxiv.org/rss/cs.IT",
+        "http://export.arxiv.org/rss/cs.MS",
+        "http://export.arxiv.org/rss/cs.OS",
+        "http://export.arxiv.org/rss/cs.PL",
+        "http://export.arxiv.org/rss/cs.SE",
+        "http://export.arxiv.org/rss/cs.LG"
+    )
+
     // Instantiate a ViewPager by lazy.
     private val pager by lazy { findViewById<ViewPager>(R.id.pager) }
 
@@ -40,19 +56,6 @@ abstract class ArxivPapersFragmentActivity : FragmentActivity(), CoroutineScope 
         // Get arXiv RSS information and set the pager adapter which provides the pages to the view paper widget.
         launch {
             val allCategoryItems: MutableList<Item> = mutableListOf()
-            val urlList: List<String> = listOf(
-                "http://export.arxiv.org/rss/cs.CL",
-                "http://export.arxiv.org/rss/cs.CV",
-                "http://export.arxiv.org/rss/cs.DS",
-                "http://export.arxiv.org/rss/cs.ET",
-                "http://export.arxiv.org/rss/cs.GT",
-                "http://export.arxiv.org/rss/cs.IR",
-                "http://export.arxiv.org/rss/cs.IT",
-                "http://export.arxiv.org/rss/cs.MS",
-                "http://export.arxiv.org/rss/cs.OS",
-                "http://export.arxiv.org/rss/cs.PL",
-                "http://export.arxiv.org/rss/cs.SE",
-                "http://export.arxiv.org/rss/cs.LG")
             urlList.forEach {
                 val (_, _, result) = it.httpGet().awaitStringResponseResult(scope = Dispatchers.IO)
                 val data: String = result.get()
