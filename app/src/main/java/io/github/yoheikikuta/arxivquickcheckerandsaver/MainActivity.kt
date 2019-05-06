@@ -1,6 +1,5 @@
 package io.github.yoheikikuta.arxivquickcheckerandsaver
 
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
@@ -11,37 +10,60 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
 import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.result.Result
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
-class MainActivity : FragmentActivity() {
+class MainActivity : ArxivPapersFragmentActivity() {
+    // Just inherit ArxivPapersFragmentActivity
+}
 
-    /**
-     * The pager widget, which handles animation and allows swiping horizontally to access previous
-     * and next wizard steps.
-     */
+
+abstract class ArxivPapersFragmentActivity : FragmentActivity(), CoroutineScope {
+    private lateinit var job: Job
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
 
     // Instantiate a ViewPager by lazy.
     private val pager by lazy { findViewById<ViewPager>(R.id.pager) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        job = Job()
+
         setContentView(R.layout.activity_screen_slide)
 
         // Get arXiv RSS information and set the pager adapter which provides the pages to the view paper widget.
-        "http://export.arxiv.org/rss/cs.CV".httpGet().responseString { _, _, result ->
-            when (result) {
-                is Result.Failure -> {
-                    val ex = result.getException()
-                }
-                is Result.Success -> {
-                    val data = result.get()
-                    val items: List<Item> = ArxivRSSXmlParser().parse(data) as List<Item>?
-                        ?: listOf(Item(title = "NO ENTRY", creator = "", description = "", isNew = true))
-                    val pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager, items)
-                    pager.adapter = pagerAdapter
-                }
+        launch {
+            var allCategoryItems: MutableList<Item> = mutableListOf()
+            val urlList: List<String> = listOf(
+                "http://export.arxiv.org/rss/cs.CL",
+                "http://export.arxiv.org/rss/cs.CV",
+                "http://export.arxiv.org/rss/cs.DS",
+                "http://export.arxiv.org/rss/cs.ET",
+                "http://export.arxiv.org/rss/cs.GT",
+                "http://export.arxiv.org/rss/cs.IR",
+                "http://export.arxiv.org/rss/cs.IT",
+                "http://export.arxiv.org/rss/cs.MS",
+                "http://export.arxiv.org/rss/cs.OS",
+                "http://export.arxiv.org/rss/cs.PL",
+                "http://export.arxiv.org/rss/cs.SE",
+                "http://export.arxiv.org/rss/cs.LG")
+            urlList.forEach {
+                val (_, _, result) = it.httpGet().awaitStringResponseResult(scope = Dispatchers.IO)
+                val data: String = result.get()
+                val items: List<Item> = ArxivRSSXmlParser().parse(data) as List<Item>?
+                    ?: listOf(Item(title = "NO ENTRY", creator = "", description = "", isNew = true))
+                allCategoryItems.addAll(items)
+                return@forEach
             }
+
+            val pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager, allCategoryItems)
+            pager.adapter = pagerAdapter
         }
     }
 
@@ -55,7 +77,6 @@ class MainActivity : FragmentActivity() {
     }
 
 }
-
 
 class ScreenSlidePageFragment: Fragment() {
 
