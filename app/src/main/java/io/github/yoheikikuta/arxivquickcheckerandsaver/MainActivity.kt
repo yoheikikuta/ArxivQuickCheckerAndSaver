@@ -64,7 +64,7 @@ abstract class ArxivPapersFragmentActivity : FragmentActivity(), CoroutineScope 
                 allCategoryItems.addAll(items)
             }
 
-            val pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager, allCategoryItems.distinct())
+            val pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager, postProcessItems(allCategoryItems))
             pager.adapter = pagerAdapter
         }
     }
@@ -76,6 +76,15 @@ abstract class ArxivPapersFragmentActivity : FragmentActivity(), CoroutineScope 
         override fun getCount(): Int = items.size
 
         override fun getItem(position: Int): Fragment = ScreenSlidePageFragment.newInstance(position, items[position])
+    }
+
+    private fun postProcessItems(items: MutableList<Item>): MutableList<Item> {
+        val distinctItems = items.distinct()
+        val totalPaperNum = distinctItems.size
+
+        return distinctItems.mapIndexed { index, item ->
+            Item(item.title + " (${index + 1}/$totalPaperNum)", item.creator, item.description, item.isNew)
+        } as MutableList<Item>
     }
 
 }
