@@ -18,7 +18,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
-class MainActivity : ArxivPapersFragmentActivity() {
+//class MainActivity : ArxivPapersFragmentActivity() {
+//    // Just inherit ArxivPapersFragmentActivity
+//}
+class MainActivity : GoogleDriveSaver() {
     // Just inherit ArxivPapersFragmentActivity
 }
 
