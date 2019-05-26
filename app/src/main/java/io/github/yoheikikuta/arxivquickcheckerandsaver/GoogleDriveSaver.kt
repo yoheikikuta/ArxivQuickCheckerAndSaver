@@ -42,7 +42,10 @@ class GoogleDriveSaver : AppCompatActivity(), CoroutineScope by MainScope()  {
         when(requestCode) {
             REQUEST_SIGN_IN -> {
                 if (resultCode == RESULT_OK && data != null) {
-                    handleSignInResult(data)
+                    val bundle = intent.extras
+                    val title: String = bundle.getString("title")
+                    val link: String = bundle.getString("link")
+                    handleSignInResult(data, title, link)
                 }
                 else {
                     println("Sign-in request failed")
@@ -60,7 +63,7 @@ class GoogleDriveSaver : AppCompatActivity(), CoroutineScope by MainScope()  {
         return GoogleSignIn.getClient(this, signInOptions)
     }
 
-    private fun handleSignInResult(result: Intent) {
+    private fun handleSignInResult(result: Intent, title: String, link: String) {
         GoogleSignIn.getSignedInAccountFromIntent(result)
             .addOnSuccessListener { googleAccount ->
                 // Use the authenticated account to sign in to the Drive service.
@@ -81,7 +84,7 @@ class GoogleDriveSaver : AppCompatActivity(), CoroutineScope by MainScope()  {
 
                 // GET pdf file.
                 launch(Dispatchers.Default) {
-                    val (_, response, result) = "https://arxiv.org/pdf/1905.09314.pdf".httpGet().awaitByteArrayResponseResult(scope = Dispatchers.IO)
+                    val (_, response, result) = link.httpGet().awaitByteArrayResponseResult(scope = Dispatchers.IO)
 
                     val temp = File.createTempFile("temp", ".pdf")
                     val bos = BufferedOutputStream(FileOutputStream(temp))
@@ -90,7 +93,7 @@ class GoogleDriveSaver : AppCompatActivity(), CoroutineScope by MainScope()  {
 
                     val blobPdf = FileContent("application/pdf", File(temp.path))
                     val targetDriveFile = DriveFile()
-                    targetDriveFile.name = "TestPdfFile.pdf"
+                    targetDriveFile.name = makePaperFileName(title, link)
                     targetDriveFile.parents = arrayListOf("1NO62Pw__M2Em-Y77uMfPoDf1-VajlGCu")
                     googleDriveService.files().create(targetDriveFile, blobPdf)
                         .setFields("id")
@@ -101,6 +104,13 @@ class GoogleDriveSaver : AppCompatActivity(), CoroutineScope by MainScope()  {
             .addOnFailureListener { e ->
                 println("Sign-in error: $e")
             }
+    }
+
+    private fun makePaperFileName(title: String, link: String) : String {
+        val arXivID = "\\d+.\\d+".toRegex(RegexOption.IGNORE_CASE).find(link)?.value!!
+        val titleText = ".+\\.".toRegex(RegexOption.IGNORE_CASE).find(title)?.value!!
+
+        return "[$arXivID]${titleText}pdf"
     }
 
     private fun requestSignIn() {

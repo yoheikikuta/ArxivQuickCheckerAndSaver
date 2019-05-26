@@ -25,9 +25,6 @@ import android.content.Intent
 class MainActivity : ArxivPapersFragmentActivity() {
     // Just inherit ArxivPapersFragmentActivity
 }
-//class MainActivity : GoogleDriveSaver() {
-//    // Just inherit ArxivPapersFragmentActivity
-//}
 
 
 abstract class ArxivPapersFragmentActivity : FragmentActivity(), CoroutineScope {
@@ -67,7 +64,7 @@ abstract class ArxivPapersFragmentActivity : FragmentActivity(), CoroutineScope 
                 val (_, _, result) = it.httpGet().awaitStringResponseResult(scope = Dispatchers.IO)
                 val data: String = result.get()
                 val items: List<Item> = ArxivRSSXmlParser().parse(data) as List<Item>?
-                    ?: listOf(Item(title = "NO ENTRY", creator = "", description = "", isNew = true))
+                    ?: listOf(Item(title = "NO ENTRY", creator = "", description = "", link = "", isNew = true))
                 allCategoryItems.addAll(items)
             }
 
@@ -90,7 +87,7 @@ abstract class ArxivPapersFragmentActivity : FragmentActivity(), CoroutineScope 
         val totalPaperNum = distinctItems.size
 
         return distinctItems.mapIndexed { index, item ->
-            Item(item.title + " (${index + 1}/$totalPaperNum)", item.creator, item.description, item.isNew)
+            Item(item.title + " (${index + 1}/$totalPaperNum)", item.creator, item.description, item.link, item.isNew)
         } as MutableList<Item>
     }
 
@@ -131,8 +128,11 @@ class ScreenSlidePageFragment: Fragment() {
         val button = view.findViewById<Button>(R.id.saveButton)
         button.setOnClickListener {
             val intent = Intent(activity, GoogleDriveSaver::class.java)
+            val bundle = Bundle()
+            bundle.putString("title", item.title)
+            bundle.putString("link", item.link)
+            intent.putExtras(bundle)
             startActivity(intent)
-//            GoogleDriveSaver()
         }
     }
 }

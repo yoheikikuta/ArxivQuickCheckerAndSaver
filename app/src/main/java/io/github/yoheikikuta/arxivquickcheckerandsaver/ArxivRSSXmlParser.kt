@@ -1,6 +1,5 @@
 package io.github.yoheikikuta.arxivquickcheckerandsaver
 
-import android.content.ClipData
 import android.os.Parcelable
 import android.text.Html
 import android.util.Xml
@@ -11,7 +10,7 @@ import java.io.IOException
 import java.io.StringReader
 
 @Parcelize
-data class Item(val title: String, val creator: String, val description: String, val isNew: Boolean): Parcelable
+data class Item(val title: String, val creator: String, val description: String, val link: String, val isNew: Boolean): Parcelable
 
 class ArxivRSSXmlParser {
 
@@ -53,6 +52,7 @@ class ArxivRSSXmlParser {
         var title = ""
         var creator = ""
         var description = ""
+        var link = ""
         var isNew = true
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.eventType != XmlPullParser.START_TAG) {
@@ -62,6 +62,7 @@ class ArxivRSSXmlParser {
                 "title" -> title = readTitle(parser)
                 "dc:creator" -> creator = readCreator(parser)
                 "description" -> description = readDescription(parser)
+                "link" -> link = readLink(parser)
                 else -> skip(parser)
             }
         }
@@ -69,8 +70,9 @@ class ArxivRSSXmlParser {
         // Postprocessing: check whether the paper is new and remove (arXiv:XXXX.XXXX) information in the title.
         isNew = !Regex("UPDATED").containsMatchIn(title)
         title = title.replace(" \\(arXiv:.*\\)".toRegex(),"")
+        link = link.replace("/abs/", "/pdf/") + ".pdf"
 
-        return Item(title, creator, description, isNew)
+        return Item(title, creator, description, link, isNew)
     }
 
     // Processes title tags in the feed.
@@ -98,6 +100,15 @@ class ArxivRSSXmlParser {
         val description = Html.fromHtml(readText(parser)).toString()
         parser.require(XmlPullParser.END_TAG, ns, "description")
         return description
+    }
+
+    // Processes link tags in the feed.
+    @Throws(IOException::class, XmlPullParserException::class)
+    fun readLink(parser: XmlPullParser): String {
+        parser.require(XmlPullParser.START_TAG, ns, "link")
+        val link = Html.fromHtml(readText(parser)).toString()
+        parser.require(XmlPullParser.END_TAG, ns, "link")
+        return link
     }
 
     // Extracts their text values.
