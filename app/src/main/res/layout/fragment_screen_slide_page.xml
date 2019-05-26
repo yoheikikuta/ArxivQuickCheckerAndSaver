@@ -19,7 +19,7 @@
             android:textColor="@color/colorPrimaryDark"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintVertical_weight="1"
+            app:layout_constraintVertical_weight="2"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/creator"/>
 
@@ -33,9 +33,25 @@
             android:paddingRight="10dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintVertical_weight="1"
+            app:layout_constraintVertical_weight="2"
             app:layout_constraintTop_toBottomOf="@+id/title"
-            app:layout_constraintBottom_toTopOf="@+id/description"/>
+            app:layout_constraintBottom_toTopOf="@+id/saveButton"/>
+
+    <Button
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:text="Save to Drive"
+            android:layout_marginTop="8dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintVertical_weight="1"
+            app:layout_constraintTop_toBottomOf="@+id/creator"
+            app:layout_constraintBottom_toTopOf="@+id/description"
+            android:textColor="#0032FF"
+            android:background="#FFFFFF"/>
 
     <TextView
             android:id="@+id/description"
@@ -47,11 +63,11 @@
             android:text="Description"
             android:textColor="@android:color/black"
             android:lineSpacingMultiplier="1.2"
-            app:layout_constraintVertical_weight="9"
+            app:layout_constraintVertical_weight="20"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/creator"
+            app:layout_constraintTop_toBottomOf="@+id/saveButton"
             android:layout_marginBottom="8dp"/>
 
 </android.support.constraint.ConstraintLayout>

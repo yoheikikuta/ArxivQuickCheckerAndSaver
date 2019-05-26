@@ -17,10 +17,11 @@ import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import kotlinx.coroutines.*
 import java.io.*
+import java.lang.Thread.sleep
 
 typealias DriveFile = com.google.api.services.drive.model.File
 
-open class GoogleDriveSaver : AppCompatActivity(), CoroutineScope by MainScope()  {
+class GoogleDriveSaver : AppCompatActivity(), CoroutineScope by MainScope()  {
 
     companion object {
         private const val REQUEST_SIGN_IN = 1
@@ -94,7 +95,6 @@ open class GoogleDriveSaver : AppCompatActivity(), CoroutineScope by MainScope()
                     googleDriveService.files().create(targetDriveFile, blobPdf)
                         .setFields("id")
                         .execute()
-
                 }
 
             }

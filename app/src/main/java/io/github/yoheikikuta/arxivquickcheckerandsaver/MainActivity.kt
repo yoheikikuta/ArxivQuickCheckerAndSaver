@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
 import com.github.kittinunf.fuel.httpGet
@@ -17,13 +18,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
+import android.content.Intent
 
-//class MainActivity : ArxivPapersFragmentActivity() {
-//    // Just inherit ArxivPapersFragmentActivity
-//}
-class MainActivity : GoogleDriveSaver() {
+
+
+class MainActivity : ArxivPapersFragmentActivity() {
     // Just inherit ArxivPapersFragmentActivity
 }
+//class MainActivity : GoogleDriveSaver() {
+//    // Just inherit ArxivPapersFragmentActivity
+//}
 
 
 abstract class ArxivPapersFragmentActivity : FragmentActivity(), CoroutineScope {
@@ -123,5 +127,12 @@ class ScreenSlidePageFragment: Fragment() {
         titleTextView.text = item.title
         creatorTextView.text = item.creator
         descriptionTextView.text = item.description
+
+        val button = view.findViewById<Button>(R.id.saveButton)
+        button.setOnClickListener {
+            val intent = Intent(activity, GoogleDriveSaver::class.java)
+            startActivity(intent)
+//            GoogleDriveSaver()
+        }
     }
 }
