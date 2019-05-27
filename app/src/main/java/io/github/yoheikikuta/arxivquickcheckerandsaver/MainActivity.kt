@@ -74,7 +74,7 @@ abstract class ArxivPapersFragmentActivity : FragmentActivity(), CoroutineScope 
     }
 
     /**
-     * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in sequence.
+     * A simple pager adapter that represents {# of papers} ScreenSlidePageFragment objects, in sequence.
      */
     private inner class ScreenSlidePagerAdapter(fm: FragmentManager, val items: List<Item>) : FragmentStatePagerAdapter(fm) {
         override fun getCount(): Int = items.size

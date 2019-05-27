@@ -78,10 +78,6 @@ class GoogleDriveSaver : AppCompatActivity(), CoroutineScope by MainScope()  {
                     .setApplicationName(getString(R.string.app_name))
                     .build()
 
-                // https://developers.google.com/drive/api/v3/search-files
-                // https://developers.google.com/drive/api/v3/search-parameters
-                // https://developers.google.com/drive/api/v3/mime-types
-
                 // GET pdf file.
                 launch(Dispatchers.Default) {
                     val (_, response, result) = link.httpGet().awaitByteArrayResponseResult(scope = Dispatchers.IO)
@@ -106,11 +102,16 @@ class GoogleDriveSaver : AppCompatActivity(), CoroutineScope by MainScope()  {
             }
     }
 
+    /**
+     * Make a file name of given title and link.
+     * @args title: "Some arXiv paper. some char", link: "https://arxiv.org/pdf/1905.09314.pdf"
+     * @return "[1905.09314] Some arXiv paper.pdf"
+     */
     private fun makePaperFileName(title: String, link: String) : String {
         val arXivID = "\\d+.\\d+".toRegex(RegexOption.IGNORE_CASE).find(link)?.value!!
         val titleText = ".+\\.".toRegex(RegexOption.IGNORE_CASE).find(title)?.value!!
 
-        return "[$arXivID]${titleText}pdf"
+        return "[$arXivID] ${titleText}pdf"
     }
 
     private fun requestSignIn() {
