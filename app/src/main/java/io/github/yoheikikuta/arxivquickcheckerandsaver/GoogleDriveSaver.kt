@@ -17,10 +17,10 @@ import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import kotlinx.coroutines.*
 import java.io.*
-import java.lang.Thread.sleep
 
 typealias DriveFile = com.google.api.services.drive.model.File
 
+// This class refers to https://code.luasoftware.com/tutorials/android/setup-android-google-drive-rest-api/.
 class GoogleDriveSaver : AppCompatActivity(), CoroutineScope by MainScope()  {
 
     companion object {
@@ -80,8 +80,10 @@ class GoogleDriveSaver : AppCompatActivity(), CoroutineScope by MainScope()  {
 
                 // GET pdf file.
                 launch(Dispatchers.Default) {
-                    val (_, response, result) = link.httpGet().awaitByteArrayResponseResult(scope = Dispatchers.IO)
+                    val (_, _, result) = link.httpGet().awaitByteArrayResponseResult(scope = Dispatchers.IO)
 
+                    // Uploading file refers to https://developers.google.com/drive/api/v3/manage-uploads.
+                    // To make FileContent with file's URI, the pdf file is saved as a temp file.
                     val temp = File.createTempFile("temp", ".pdf")
                     val bos = BufferedOutputStream(FileOutputStream(temp))
                     bos.write(result.get())
