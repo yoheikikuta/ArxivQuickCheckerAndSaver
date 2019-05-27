@@ -96,6 +96,9 @@ class GoogleDriveSaver : AppCompatActivity(), CoroutineScope by MainScope()  {
                     googleDriveService.files().create(targetDriveFile, blobPdf)
                         .setFields("id")
                         .execute()
+
+                    // After saving the file is completed, finish this activity and go back to the parent one.
+                    this@GoogleDriveSaver.finish()
                 }
 
             }
